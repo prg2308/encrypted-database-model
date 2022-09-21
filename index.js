@@ -1,58 +1,132 @@
 function partitionFunction(condition) {
 
-    switch (condition.attribute) {
-        case 'name':
-            if (condition.value[0].toLowerCase() >= 'a' && condition.value[0].toLowerCase() <= 'i') {
-                return 1
-            }
-            else if (condition.value[0].toLowerCase() >= 'j' && condition.value[0].toLowerCase() <= 'p') {
-                return 2
-            }
-            else if (condition.value[0].toLowerCase() >= 'q' && condition.value[0].toLowerCase() <= 'z') {
-                return 3
-            }
-            else {
-                return -1
-            }
-        case 'ssn':
-            if (parseInt(condition.value[condition.value.length - 1]) >= 0 && parseInt(condition.value[condition.value.length - 1]) <= 4) {
-                return 4
-            }
-            else if (parseInt(condition.value[condition.value.length - 1]) >= 5 && parseInt(condition.value[condition.value.length - 1]) <= 9) {
-                return 5
-            }
-            else {
-                return -1
-            }
-        case 'rank':
-            switch (condition.value) {
-                case 'manager': return 6
-                case 'secretary': return 7
-                case 'admin': return 8
-                case 'analyst': return 9
+    switch (condition.operator) {
+        case '=': {
+            switch (condition.attribute) {
+                case 'name':
+                    if (condition.value[0].toLowerCase() >= 'a' && condition.value[0].toLowerCase() <= 'i') {
+                        return [1]
+                    }
+                    else if (condition.value[0].toLowerCase() >= 'j' && condition.value[0].toLowerCase() <= 'p') {
+                        return [2]
+                    }
+                    else if (condition.value[0].toLowerCase() >= 'q' && condition.value[0].toLowerCase() <= 'z') {
+                        return [3]
+                    }
+                    else {
+                        return -1
+                    }
+                case 'ssn':
+                    if (parseInt(condition.value[condition.value.length - 1]) >= 0 && parseInt(condition.value[condition.value.length - 1]) <= 4) {
+                        return [4]
+                    }
+                    else if (parseInt(condition.value[condition.value.length - 1]) >= 5 && parseInt(condition.value[condition.value.length - 1]) <= 9) {
+                        return [5]
+                    }
+                    else {
+                        return -1
+                    }
+                case 'rank':
+                    switch (condition.value) {
+                        case 'manager': return [6]
+                        case 'secretary': return [7]
+                        case 'admin': return [8]
+                        case 'analyst': return [9]
+                        default: return -1
+                    }
+                case "salary":
+                    if (parseInt(condition.value) >= 0 && parseInt(condition.value) <= 30000) {
+                        return [10]
+                    }
+                    else if (parseInt(condition.value) >= 30000 && parseInt(condition.value) < 50000) {
+                        return [11]
+                    }
+                    else if (parseInt(condition.value) >= 50000 && parseInt(condition.value) < 65000) {
+                        return [12]
+                    }
+                    else if (parseInt(condition.value) >= 65000) {
+                        return [13]
+                    }
+                    else {
+                        return -1
+                    }
+
                 default: return -1
             }
-        case "salary":
-            if (parseInt(condition.value) >= 0 && parseInt(condition.value) <= 30000) {
-                return 10
-            }
-            else if (parseInt(condition.value) >= 30000 && parseInt(condition.value) < 50000) {
-                return 11
-            }
-            else if (parseInt(condition.value) >= 50000 && parseInt(condition.value) < 65000) {
-                return 12
-            }
-            else if (parseInt(condition.value) >= 65000) {
-                return 13
-            }
-            else {
+        }
+        default: {
+            try {
+                let value, operator, array
+                switch (condition.attribute) {
+                    case 'name':
+                        value = condition.value[0].toLowerCase()
+                        operator = condition.operator
+                        array = []
+                        if (eval(`'${value}' ${operator} 'a'`) || eval(`'${value}' ${operator} 'i'`)) {
+                            array.push(1)
+                        }
+                        if (eval(`'${value}' ${operator} 'j'`) || eval(`'${value}' ${operator} 'p'`)) {
+                            array.push(2)
+                        }
+                        if (eval(`'${value}' ${operator} 'q'`) || eval(`'${value}' ${operator} 'z'`)) {
+                            array.push(3)
+                        }
+                        if (!array.length) {
+                            return -1
+                        }
+                        return array
+                    case 'ssn':
+                        if (parseInt(condition.value[condition.value.length - 1]) >= 0 && parseInt(condition.value[condition.value.length - 1]) <= 4) {
+                            return [4]
+                        }
+                        else if (parseInt(condition.value[condition.value.length - 1]) >= 5 && parseInt(condition.value[condition.value.length - 1]) <= 9) {
+                            return [5]
+                        }
+                        else {
+                            return -1
+                        }
+                    case 'rank':
+                        switch (condition.value) {
+                            case 'manager': return [6]
+                            case 'secretary': return [7]
+                            case 'admin': return [8]
+                            case 'analyst': return [9]
+                            default: return -1
+                        }
+                    case "salary":
+                        value = parseInt(condition.value)
+                        operator = condition.operator
+                        array = []
+
+                        if (value < 0) {
+                            return -1
+                        }
+                        if (eval(`0 ${operator} ${value}`) || eval(`30000 ${operator} ${value}`)) {
+                            array.push(10)
+                        } //Swap
+                        if (eval(`30001 ${operator} ${value}`) || eval(`50000 ${operator} ${value} `)) {
+                            array.push(11)
+                        }
+                        if (eval(`50001 ${operator} ${value}`) || eval(`65000 ${operator} ${value}`)) {
+                            array.push(12)
+                        }
+                        if (value >= 65001) {
+                            array.push(13)
+                        }
+                        if (!array.length) {
+                            return -1
+                        }
+                        return array
+
+                    default: return -1
+                }
+            } catch (e) {
+                console.log(e)
                 return -1
             }
-
-        default: return -1
+        }
     }
 }
-
 
 function queryDestructor(query) {
 
@@ -108,8 +182,25 @@ function queryDestructor(query) {
     }
 }
 
+function bitIndexArray(query) {
+    try {
+        const dQuery = queryDestructor(query)
+        const { conditions, attributes } = dQuery
+        let bitIndexArray = []
+        conditions.forEach(condition => {
+            const indices = partitionFunction(condition)
+            if (indices === -1) {
+                throw new Error('Invalid Query')
+            }
+            bitIndexArray.push(indices)
+            //bitIndexArray = bitIndexArray.concat(indices)
+        })
 
-const selectQ = queryDestructor('SELECT name , salary from EMPLOYEES WHERE name = "John Doe" and salary <= 650000 ')
-const updateQ = queryDestructor('UPDATE EMPLOYEES SET name = "John Doe", salary = 650000 WHERE name = "John Die" and empId = 6969')
-
-console.log(updateQ)
+        return { bitIndexArray: [...new Set(bitIndexArray)], attributes }
+    } catch (e) {
+        console.log('Error', e)
+    }
+}
+const selectQ = 'SELECT name , salary from EMPLOYEES WHERE name = "John Doe"  and salary <= 60000 and ssn <= 87'
+const updateQ = 'UPDATE EMPLOYEES SET name = "John Doe", salary = 65000 WHERE name = "John Die" and salary >= 50000 and ssn = 87'
+console.log(bitIndexArray(updateQ))
