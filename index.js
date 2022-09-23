@@ -62,13 +62,13 @@ function partitionFunction(condition) {
                         value = condition.value[0].toLowerCase()
                         operator = condition.operator
                         array = []
-                        if (eval(`'${value}' ${operator} 'a'`) || eval(`'${value}' ${operator} 'i'`)) {
+                        if (eval(` 'a' ${operator} '${value}'`) || eval(` 'i' ${operator} '${value}'`)) {
                             array.push(1)
                         }
-                        if (eval(`'${value}' ${operator} 'j'`) || eval(`'${value}' ${operator} 'p'`)) {
+                        if (eval(` 'j' ${operator} '${value}'`) || eval(` 'p' ${operator} '${value}'`)) {
                             array.push(2)
                         }
-                        if (eval(`'${value}' ${operator} 'q'`) || eval(`'${value}' ${operator} 'z'`)) {
+                        if (eval(` 'q' ${operator} '${value}'`) || eval(` 'z' ${operator} '${value}'`)) {
                             array.push(3)
                         }
                         if (!array.length) {
@@ -192,8 +192,8 @@ function bitIndexArray(query) {
             if (indices === -1) {
                 throw new Error('Invalid Query')
             }
-            bitIndexArray.push(indices)
-            //bitIndexArray = bitIndexArray.concat(indices)
+            //bitIndexArray.push(indices)
+            bitIndexArray = bitIndexArray.concat(indices)
         })
 
         return { bitIndexArray: [...new Set(bitIndexArray)], attributes }
@@ -201,6 +201,6 @@ function bitIndexArray(query) {
         console.log('Error', e)
     }
 }
-const selectQ = 'SELECT name , salary from EMPLOYEES WHERE name = "John Doe"  and salary <= 60000 and ssn <= 87'
+const selectQ = 'SELECT name, salary from EMPLOYEES WHERE name = "John Doe" and salary >= 30000 salary <= 60000'
 const updateQ = 'UPDATE EMPLOYEES SET name = "John Doe", salary = 65000 WHERE name = "John Die" and salary >= 50000 and ssn = 87'
-console.log(bitIndexArray(updateQ))
+console.log(bitIndexArray(selectQ))
