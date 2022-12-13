@@ -179,6 +179,18 @@ function queryDestructor(query) {
 
             return { tableName, queryType, attributes, conditions }
         }
+
+        case 'insert': {
+            queryType = 'insert';
+            queryArray = query.split('values');
+            let arr1 = queryArray[0].split('employees')[1].trim()
+            let arr2 = queryArray[1].trim()
+
+            arr1 = arr1.replace(/^\((.+)\)$/, '$1').split(', ')
+            arr2 = arr2.replace(/^\((.+)\)$/, '$1').split(', ')
+            //return queryArray
+            console.log(arr1, arr2)
+        }
     }
 }
 
@@ -203,4 +215,5 @@ function bitIndexArray(query) {
 }
 const selectQ = 'SELECT name, salary from EMPLOYEES WHERE name = "John Doe" and salary >= 30000 salary <= 60000'
 const updateQ = 'UPDATE EMPLOYEES SET name = "John Doe", salary = 65000 WHERE name = "John Die" and salary >= 50000 and ssn = 87'
-console.log(bitIndexArray(selectQ))
+const insertQ = 'INSERT INTO EMPLOYEES (name, ssn, salary, rank, salary) VALUES ("John Doe", 87, 65000, "manager", 65000)'
+console.log(queryDestructor(insertQ))
