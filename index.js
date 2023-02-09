@@ -128,6 +128,26 @@ function partitionFunction(condition) {
     }
 }
 
+function bitIndexArray(query) {
+    try {
+        const dQuery = queryDestructor(query)
+        const { conditions, attributes } = dQuery
+        let bitIndexArray = []
+        conditions.forEach(condition => {
+            const indices = partitionFunction(condition)
+            if (indices === -1) {
+                throw new Error('Invalid Query')
+            }
+            //bitIndexArray.push(indices)
+            bitIndexArray = bitIndexArray.concat(indices)
+        })
+
+        return { bitIndexArray: [...new Set(bitIndexArray)], attributes }
+    } catch (e) {
+        console.log('Error', e)
+    }
+}
+
 function queryDestructor(query) {
 
     query = query.toLowerCase();
@@ -143,9 +163,11 @@ function queryDestructor(query) {
             conditions = conditions.map(conditions => {
                 return conditions.trim()
             })
+            console.log(conditions)
             conditions = conditions.map(condition => {
                 return { attribute: condition.match(/(?:[^\s"]+|"[^"]*")+/g)[0], operator: condition.match(/(?:[^\s"]+|"[^"]*")+/g)[1], value: condition.match(/(?:[^\s"]+|"[^"]*")+/g)[2].replace(new RegExp('\"', 'g'), '') }
             })
+
 
             attributes.shift()
             attributes = attributes[0].split(',')
@@ -193,27 +215,7 @@ function queryDestructor(query) {
         }
     }
 }
-
-function bitIndexArray(query) {
-    try {
-        const dQuery = queryDestructor(query)
-        const { conditions, attributes } = dQuery
-        let bitIndexArray = []
-        conditions.forEach(condition => {
-            const indices = partitionFunction(condition)
-            if (indices === -1) {
-                throw new Error('Invalid Query')
-            }
-            //bitIndexArray.push(indices)
-            bitIndexArray = bitIndexArray.concat(indices)
-        })
-
-        return { bitIndexArray: [...new Set(bitIndexArray)], attributes }
-    } catch (e) {
-        console.log('Error', e)
-    }
-}
-const selectQ = 'SELECT name, salary from EMPLOYEES WHERE name = "John Doe" and salary >= 30000 salary <= 60000'
+const selectQ = 'SELECT name, salary from EMPLOYEES WHERE name = "John Doe" and salary >= 30000'
 const updateQ = 'UPDATE EMPLOYEES SET name = "John Doe", salary = 65000 WHERE name = "John Die" and salary >= 50000 and ssn = 87'
 const insertQ = 'INSERT INTO EMPLOYEES (name, ssn, salary, rank, salary) VALUES ("John Doe", 87, 65000, "manager", 65000)'
-console.log(queryDestructor(insertQ))
+console.log(queryDestructor(selectQ))
